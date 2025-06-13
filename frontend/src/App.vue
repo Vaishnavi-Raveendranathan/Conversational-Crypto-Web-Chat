@@ -96,6 +96,9 @@ export default {
     // API base URL
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app'
 
+    // Configure axios defaults
+    axios.defaults.withCredentials = true
+
     // Initialize speech recognition
     if ('webkitSpeechRecognition' in window) {
       recognition.value = new webkitSpeechRecognition()
