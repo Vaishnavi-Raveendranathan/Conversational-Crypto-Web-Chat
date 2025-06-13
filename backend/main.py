@@ -5,7 +5,7 @@ from typing import List, Optional
 import requests
 import os
 from dotenv import load_dotenv
-import sqlite3
+from supabase import create_client, Client
 from datetime import datetime, timedelta
 import json
 
@@ -22,16 +22,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Database initialization
-def init_db():
-    conn = sqlite3.connect('portfolio.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS portfolio
-                 (id INTEGER PRIMARY KEY, symbol TEXT, amount REAL)''')
-    conn.commit()
-    conn.close()
-
-init_db()
+# Initialize Supabase client
+supabase: Client = create_client(
+    os.getenv("SUPABASE_URL", ""),
+    os.getenv("SUPABASE_KEY", "")
+)
 
 # Models
 class PortfolioItem(BaseModel):
@@ -118,7 +113,6 @@ async def get_chart(symbol: str):
         end_date = datetime.now()
         start_date = end_date - timedelta(days=7)
         
-        # Add error handling for the API request
         try:
             response = requests.get(
                 f"{COINGECKO_API}/coins/{coin_id}/market_chart/range",
@@ -127,15 +121,14 @@ async def get_chart(symbol: str):
                     "from": int(start_date.timestamp()),
                     "to": int(end_date.timestamp())
                 },
-                timeout=10  # Add timeout
+                timeout=10
             )
-            response.raise_for_status()  # Raise exception for bad status codes
+            response.raise_for_status()
             data = response.json()
             
             if "prices" not in data:
                 raise HTTPException(status_code=404, detail="No price data available")
                 
-            # Ensure we have valid data points
             if not data["prices"] or len(data["prices"]) < 2:
                 raise HTTPException(status_code=404, detail="Insufficient price data")
                 
@@ -150,12 +143,12 @@ async def get_chart(symbol: str):
 @app.post("/api/portfolio")
 async def update_portfolio(item: PortfolioItem):
     try:
-        conn = sqlite3.connect('portfolio.db')
-        c = conn.cursor()
-        c.execute("INSERT INTO portfolio (symbol, amount) VALUES (?, ?)",
-                 (item.symbol.upper(), item.amount))
-        conn.commit()
-        conn.close()
+        # Insert into Supabase
+        data = supabase.table('portfolio').insert({
+            "symbol": item.symbol.upper(),
+            "amount": item.amount
+        }).execute()
+        
         return {"message": "Portfolio updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -163,19 +156,20 @@ async def update_portfolio(item: PortfolioItem):
 @app.get("/api/portfolio")
 async def get_portfolio():
     try:
-        conn = sqlite3.connect('portfolio.db')
-        c = conn.cursor()
-        c.execute("SELECT symbol, amount FROM portfolio")
-        holdings = c.fetchall()
-        conn.close()
+        # Get all holdings from Supabase
+        response = supabase.table('portfolio').select("*").execute()
+        holdings = response.data
 
         total_value = 0
         portfolio_data = []
 
-        for symbol, amount in holdings:
+        for holding in holdings:
+            symbol = holding['symbol']
+            amount = holding['amount']
+            
             coin_id = COIN_IDS.get(symbol.upper())
             if not coin_id:
-                continue  # Skip unsupported cryptocurrencies
+                continue
                 
             price_response = requests.get(f"{COINGECKO_API}/simple/price",
                                        params={"ids": coin_id, "vs_currencies": "usd"})
@@ -196,11 +190,8 @@ async def get_portfolio():
 @app.delete("/api/portfolio")
 async def clear_portfolio():
     try:
-        conn = sqlite3.connect('portfolio.db')
-        c = conn.cursor()
-        c.execute("DELETE FROM portfolio")
-        conn.commit()
-        conn.close()
+        # Delete all records from Supabase
+        supabase.table('portfolio').delete().execute()
         return {"message": "Portfolio cleared successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
