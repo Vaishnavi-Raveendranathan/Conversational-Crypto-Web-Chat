@@ -16,7 +16,7 @@ app = FastAPI()
 # CORS middleware configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app"],
+    allow_origins=["http://localhost:5173", "https://conversational-crypto-web-chat.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
