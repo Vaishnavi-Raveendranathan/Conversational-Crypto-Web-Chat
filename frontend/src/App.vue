@@ -98,6 +98,11 @@ export default {
 
     // Configure axios defaults
     axios.defaults.withCredentials = true
+<<<<<<< Updated upstream
+=======
+    axios.defaults.headers.common['Content-Type'] = 'application/json'
+    axios.defaults.headers.common['Accept'] = 'application/json'
+>>>>>>> Stashed changes
 
     // Initialize speech recognition
     if ('webkitSpeechRecognition' in window) {

@@ -14,16 +14,22 @@ load_dotenv()
 app = FastAPI()
 
 # CORS middleware configuration
+origins = [
+    "https://conversational-crypto-web-chat.vercel.app",
+    "https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-    max_age=3600,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+    expose_headers=["Content-Type", "Authorization"],
+    max_age=86400,
 )
-
 
 # Initialize Supabase client
 supabase: Client = create_client(
