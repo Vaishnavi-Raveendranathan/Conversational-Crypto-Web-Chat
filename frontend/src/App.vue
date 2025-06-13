@@ -158,7 +158,7 @@ export default {
       if (lowerMessage.includes('price') || lowerMessage.includes('trading')) {
         const symbol = message.match(/\b[A-Z]{2,}\b/)?.[0] || 'BTC'
         try {
-          const response = await axios.get(`http://localhost:8000/api/price/${symbol}`)
+          const response = await axios.get(`https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app/api/price/${symbol}`)
           return `The current price of ${symbol} is $${response.data.price.toLocaleString()}`
         } catch (error) {
           return `Sorry, I couldn't fetch the price for ${symbol}. Please try again later.`
@@ -167,7 +167,7 @@ export default {
 
       if (lowerMessage.includes('trending')) {
         try {
-          const response = await axios.get('http://localhost:8000/api/trending')
+          const response = await axios.get('https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app/api/trending')
           const coins = response.data.coins.slice(0, 5)
           return `Here are the top trending coins:\n${coins.map(coin => 
             `- ${coin.item.name} (${coin.item.symbol.toUpperCase()})`
@@ -180,7 +180,7 @@ export default {
       if (lowerMessage.includes('stats') || lowerMessage.includes('info') || lowerMessage.includes('show me')) {
         const symbol = message.match(/\b[A-Z]{2,}\b/)?.[0] || 'BTC'
         try {
-          const response = await axios.get(`http://localhost:8000/api/stats/${symbol}`)
+          const response = await axios.get(`https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app/api/stats/${symbol}`)
           const data = response.data
           return `📊 ${data.name} (${data.symbol}) Statistics:\n\n` +
                  `💰 Market Cap: $${data.market_cap.toLocaleString()}\n` +
@@ -194,7 +194,7 @@ export default {
       if (lowerMessage.includes('chart') || lowerMessage.includes('graph') || lowerMessage.includes('price history')) {
         const symbol = message.match(/\b[A-Z]{2,}\b/)?.[0] || 'BTC'
         try {
-          const response = await axios.get(`http://localhost:8000/api/chart/${symbol}`)
+          const response = await axios.get(`https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app/api/chart/${symbol}`)
           const prices = response.data.prices
           
           if (!prices || prices.length < 2) {
@@ -273,7 +273,7 @@ export default {
             amount = match[2];
           }
           try {
-            await axios.post('http://localhost:8000/api/portfolio', {
+            await axios.post('https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app/api/portfolio', {
               symbol: symbol.toUpperCase(),
               amount: parseFloat(amount)
             })
@@ -288,7 +288,7 @@ export default {
       if (lowerMessage.includes('portfolio') || lowerMessage.includes('holdings')) {
         if (lowerMessage.includes('clear') || lowerMessage.includes('delete') || lowerMessage.includes('remove')) {
           try {
-            await axios.delete('http://localhost:8000/api/portfolio')
+            await axios.delete('https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app/api/portfolio')
             return 'Your portfolio has been cleared successfully.'
           } catch (error) {
             console.error('Portfolio clear error:', error)
@@ -297,7 +297,7 @@ export default {
         }
         
         try {
-          const response = await axios.get('http://localhost:8000/api/portfolio')
+          const response = await axios.get('https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app/api/portfolio')
           const data = response.data
           return `Your portfolio value: $${data.total_value.toLocaleString()}\n` +
                  `Holdings:\n${data.holdings.map(h => 
