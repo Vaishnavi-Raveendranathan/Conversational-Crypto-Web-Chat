@@ -14,17 +14,9 @@ load_dotenv()
 app = FastAPI()
 
 # CORS middleware configuration
-origins = [
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "https://conversational-crypto-web-chat.vercel.app",
-    "https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app",
-    "https://*.vercel.app",  # Allow all Vercel preview deployments
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],  # Allow all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
