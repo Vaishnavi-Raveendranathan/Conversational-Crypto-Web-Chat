@@ -14,16 +14,22 @@ load_dotenv()
 app = FastAPI()
 
 # CORS middleware configuration
+origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://conversational-crypto-web-chat.vercel.app",
+    "https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app",
+    "https://*.vercel.app",  # Allow all Vercel preview deployments
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://conversational-crypto-web-chat.vercel.app",
-        "https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app"
-    ],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
 )
 
 # Initialize Supabase client
