@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app',
         changeOrigin: true
       }
     }
