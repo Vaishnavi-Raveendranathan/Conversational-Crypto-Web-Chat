@@ -24,6 +24,7 @@ app.add_middleware(
     max_age=3600,
 )
 
+
 # Initialize Supabase client
 supabase: Client = create_client(
     os.getenv("SUPABASE_URL", ""),
