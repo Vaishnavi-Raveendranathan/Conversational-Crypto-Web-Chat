@@ -36,10 +36,30 @@ app.add_middleware(
 @app.middleware("http")
 async def add_cors_headers(request: Request, call_next):
     response = await call_next(request)
-    response.headers["Access-Control-Allow-Origin"] = "https://conversational-crypto-web-chat.vercel.app"
+    
+    # Get the origin from the request
+    origin = request.headers.get("origin")
+    
+    # If the origin is in our allowed origins, use it
+    if origin in origins:
+        response.headers["Access-Control-Allow-Origin"] = origin
+    else:
+        # Default to the main domain if origin is not in allowed origins
+        response.headers["Access-Control-Allow-Origin"] = "https://conversational-crypto-web-chat.vercel.app"
+    
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With"
     response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Max-Age"] = "86400"
+    
+    # Handle preflight requests
+    if request.method == "OPTIONS":
+        return JSONResponse(
+            content={},
+            status_code=200,
+            headers=dict(response.headers)
+        )
+    
     return response
 
 # Initialize Supabase client
