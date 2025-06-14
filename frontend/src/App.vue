@@ -160,6 +160,22 @@ export default {
       }
     }
 
+    // Error handling function
+    const handleApiError = (error, defaultMessage) => {
+      console.error('API Error:', error)
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        return `Error: ${error.response.data.detail || defaultMessage}`
+      } else if (error.request) {
+        // The request was made but no response was received
+        return 'No response from server. Please try again later.'
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        return defaultMessage
+      }
+    }
+
     const processUserMessage = async (message) => {
       const lowerMessage = message.toLowerCase()
       
@@ -169,7 +185,7 @@ export default {
           const response = await axios.get(`${API_BASE_URL}/api/price/${symbol}`)
           return `The current price of ${symbol} is $${response.data.price.toLocaleString()}`
         } catch (error) {
-          return `Sorry, I couldn't fetch the price for ${symbol}. Please try again later.`
+          return handleApiError(error, `Sorry, I couldn't fetch the price for ${symbol}. Please try again later.`)
         }
       }
 
@@ -181,7 +197,7 @@ export default {
             `- ${coin.item.name} (${coin.item.symbol.toUpperCase()})`
           ).join('\n')}`
         } catch (error) {
-          return 'Sorry, I couldn\'t fetch trending coins. Please try again later.'
+          return handleApiError(error, 'Sorry, I couldn\'t fetch trending coins. Please try again later.')
         }
       }
 
@@ -195,7 +211,7 @@ export default {
                  `📈 24h Change: ${data.price_change_24h.toFixed(2)}%\n\n` +
                  `📝 Description:\n${data.description}`
         } catch (error) {
-          return `Sorry, I couldn't fetch stats for ${symbol}. Please try again later.`
+          return handleApiError(error, `Sorry, I couldn't fetch stats for ${symbol}. Please try again later.`)
         }
       }
 
