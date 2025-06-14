@@ -6,10 +6,25 @@
         "use": "@vercel/python"
       }
     ],
-    "rewrites": [
+    "routes": [
         {
-            "source": "/(.*)",
-            "destination": "https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app/$1"
+            "src": "/api/(.*)",
+            "dest": "main:app"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "main.py"
+        }
+    ],
+    "headers": [
+        {
+            "source": "/api/(.*)",
+            "headers": [
+                { "key": "Access-Control-Allow-Origin", "value": "*" },  // Replace with your frontend origin in production!
+                { "key": "Access-Control-Allow-Methods", "value": "GET, POST, PUT, DELETE, OPTIONS" },
+                { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }, // Customize headers as needed
+                { "key": "Access-Control-Allow-Credentials", "value": "true" }
+            ]
         }
     ]
   } 
