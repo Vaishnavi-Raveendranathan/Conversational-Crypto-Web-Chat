@@ -20,20 +20,13 @@ app = FastAPI(
 )
 
 # CORS middleware configuration
-origins = [
-    "https://conversational-crypto-web-chat.vercel.app",
-    "https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app",
-    "http://localhost:5173",
-    "http://localhost:3000"
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],  # Allow all origins
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
-    expose_headers=["Content-Type", "Authorization"],
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
+    expose_headers=["*"],  # Expose all headers
     max_age=86400,
 )
 
@@ -42,18 +35,10 @@ app.add_middleware(
 async def add_cors_headers(request: Request, call_next):
     response = await call_next(request)
     
-    # Get the origin from the request
-    origin = request.headers.get("origin")
-    
-    # If the origin is in our allowed origins, use it
-    if origin in origins:
-        response.headers["Access-Control-Allow-Origin"] = origin
-    else:
-        # Default to the main domain if origin is not in allowed origins
-        response.headers["Access-Control-Allow-Origin"] = "https://conversational-crypto-web-chat.vercel.app"
-    
+    # Set CORS headers for all responses
+    response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With"
+    response.headers["Access-Control-Allow-Headers"] = "*"
     response.headers["Access-Control-Allow-Credentials"] = "true"
     response.headers["Access-Control-Max-Age"] = "86400"
     
@@ -70,7 +55,7 @@ async def add_cors_headers(request: Request, call_next):
 @app.exception_handler(Exception)
 async def exception_handler(request: Request, exception: Union[Exception, RuntimeError]):
     headers = {
-        'Access-Control-Allow-Origin': ', '.join(origins),
+        'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Credentials': 'true',
         'Access-Control-Allow-Methods': '*',
         'Access-Control-Allow-Headers': '*',
