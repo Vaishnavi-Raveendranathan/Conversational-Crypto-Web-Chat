@@ -1,0 +1,7 @@
+[build]
+  command = "bash install-rust.sh && pip install -r requirements.txt && <your build command>"
+  environment = { PYTHON_VERSION = "3.11" }  # or your Python version
+
+[build.environment]
+  RUSTUP_HOME = "/opt/buildhome/.rustup"
+  CARGO_HOME = "/opt/buildhome/.cargo"
