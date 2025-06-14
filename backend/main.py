@@ -12,7 +12,11 @@ import json
 
 load_dotenv()
 
-app = FastAPI()
+app = FastAPI(
+    title="Crypto Chat API",
+    description="API for the Conversational Crypto Web Chat application",
+    version="1.0.0"
+)
 
 # CORS middleware configuration
 origins = [
@@ -61,6 +65,26 @@ async def add_cors_headers(request: Request, call_next):
         )
     
     return response
+
+@app.get("/")
+async def root():
+    return {
+        "status": "online",
+        "version": "1.0.0",
+        "endpoints": {
+            "price": "/api/price/{symbol}",
+            "trending": "/api/trending",
+            "stats": "/api/stats/{symbol}",
+            "chart": "/api/chart/{symbol}",
+            "portfolio": {
+                "get": "/api/portfolio",
+                "post": "/api/portfolio",
+                "delete": "/api/portfolio"
+            }
+        },
+        "supported_cryptocurrencies": list(COIN_IDS.keys()),
+        "documentation": "/docs"
+    }
 
 # Initialize Supabase client
 supabase: Client = create_client(
