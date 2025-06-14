@@ -19,6 +19,19 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# CORS configuration
+origins = [
+    "https://conversational-crypto-web-chat.vercel.app"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # or ["*"] for public APIs
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/")
 async def root():
@@ -214,16 +227,6 @@ async def clear_portfolio():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# CORS middleware configuration
-origins = ["https://conversational-crypto-web-chat.vercel.app"]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 if __name__ == "__main__":
     import uvicorn
