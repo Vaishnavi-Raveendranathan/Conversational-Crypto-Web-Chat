@@ -20,37 +20,24 @@ app = FastAPI(
 )
 
 # CORS middleware configuration
+origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods
-    allow_headers=["*"],  # Allow all headers
-    expose_headers=["*"],  # Expose all headers
-    max_age=86400,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Add middleware to set CORS headers
-@app.middleware("http")
-async def add_cors_headers(request: Request, call_next):
-    response = await call_next(request)
-    
-    # Set CORS headers for all responses
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "*"
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Max-Age"] = "86400"
-    
-    # Handle preflight requests
-    if request.method == "OPTIONS":
-        return JSONResponse(
-            content={},
-            status_code=200,
-            headers=dict(response.headers)
-        )
-    
-    return response
+@app.options("/{path:path}")  # Catch all OPTIONS requests
+async def options_handler(request: Request, path: str):
+    return JSONResponse(status_code=200, headers={
+        "Access-Control-Allow-Origin": request.headers.get("origin") or "*",
+        "Access-Control-Allow-Methods": request.headers.get("access-control-request-method", "*"),
+        "Access-Control-Allow-Headers": request.headers.get("access-control-request-headers", "*"),
+        "Access-Control-Allow-Credentials": "true",
+    })
 
 @app.exception_handler(Exception)
 async def exception_handler(request: Request, exception: Union[Exception, RuntimeError]):
