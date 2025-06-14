@@ -215,7 +215,7 @@ async def clear_portfolio():
         raise HTTPException(status_code=500, detail=str(e))
 
 # CORS middleware configuration
-origins = ["*"]
+origins = ["https://conversational-crypto-web-chat.vercel.app"]
 
 app.add_middleware(
     CORSMiddleware,

@@ -13,7 +13,7 @@
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "https://conversational-crypto-web-chat.vercel.app/"
+          "value": "https://conversational-crypto-web-chat.vercel.app"
         },
         {
           "key": "Access-Control-Allow-Methods",
