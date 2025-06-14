@@ -6,10 +6,18 @@
         "use": "@vercel/python"
       }
     ],
-    "rewrites": [
-        {
-            "source": "/api/(.*)",
-            "destination": "https://conversational-crypto-web-chat-e36a.vercel.app/api/$1"
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "main.py",
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "headers": {
+          "Access-Control-Allow-Origin": "https://conversational-crypto-web-chat.vercel.app",
+          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+          "Access-Control-Allow-Credentials": "true",
+          "Access-Control-Max-Age": "86400"
         }
+      }
     ]
   } 
