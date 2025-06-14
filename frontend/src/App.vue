@@ -94,7 +94,7 @@ export default {
     const recognition = ref(null)
 
     // API base URL
-    const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://conversational-crypto-web-chat-e36a-4zot3izie.vercel.app'
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://conversational-crypto-web-chat-1.onrender.com'
 
     // Configure axios defaults
     axios.defaults.withCredentials = true
