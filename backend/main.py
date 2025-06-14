@@ -21,7 +21,8 @@ app = FastAPI(
 
 # CORS configuration
 origins = [
-    "https://conversational-crypto-web-chat.vercel.app"
+    "https://conversational-crypto-web-chat.vercel.app",
+    "https://graceful-bavarois-f8a135.netlify.app"
 ]
 
 app.add_middleware(
