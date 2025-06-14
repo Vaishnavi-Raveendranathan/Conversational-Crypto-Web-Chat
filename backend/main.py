@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException, Request, Header, Depends
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Union
 import requests
 import os
 from dotenv import load_dotenv
@@ -64,6 +65,25 @@ async def add_cors_headers(request: Request, call_next):
             headers=dict(response.headers)
         )
     
+    return response
+
+@app.exception_handler(Exception)
+async def exception_handler(request: Request, exception: Union[Exception, RuntimeError]):
+    headers = {
+        'Access-Control-Allow-Origin': ', '.join(origins),
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Methods': '*',
+        'Access-Control-Allow-Headers': '*',
+    }
+    response = JSONResponse(
+        jsonable_encoder(
+            {
+                "exception": str(exception),
+                "code": 500,
+            }
+        ),
+        headers=headers
+    )
     return response
 
 @app.get("/")
@@ -151,11 +171,6 @@ async def get_stats(symbol: str):
             raise HTTPException(status_code=404, detail=f"Unsupported cryptocurrency: {symbol}")
             
         response = requests.get(f"{COINGECKO_API}/coins/{coin_id}")
-        if response.status_code == 404:
-            raise HTTPException(status_code=404, detail=f"Cryptocurrency not found: {symbol}")
-        elif response.status_code != 200:
-            raise HTTPException(status_code=response.status_code, detail="Error fetching cryptocurrency data")
-            
         data = response.json()
         
         # Get the first paragraph of the description
@@ -169,8 +184,6 @@ async def get_stats(symbol: str):
             "price_change_24h": data["market_data"]["price_change_percentage_24h"],
             "description": brief_description
         }
-    except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching data from CoinGecko: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
