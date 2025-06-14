@@ -32,6 +32,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.options("/{path:path}")
+async def preflight_handler(request: Request, path: str = ""):
+    return JSONResponse(content={}, status_code=200)
 
 @app.get("/")
 async def root():
