@@ -30,49 +30,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.middleware("http")
-async def add_cors_headers(request: Request, call_next):
-    response = await call_next(request)
-    
-    # Get the origin from the request
-    origin = request.headers.get("origin", "*")
-    
-    # Add CORS headers to the response
-    response.headers["Access-Control-Allow-Origin"] = origin
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With"
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Max-Age"] = "86400"
-    
-    return response
-
-@app.options("/{path:path}")  # Catch all OPTIONS requests
-async def options_handler(request: Request, path: str):
-    return JSONResponse(status_code=200, headers={
-        "Access-Control-Allow-Origin": request.headers.get("origin") or "*",
-        "Access-Control-Allow-Methods": request.headers.get("access-control-request-method", "*"),
-        "Access-Control-Allow-Headers": request.headers.get("access-control-request-headers", "*"),
-        "Access-Control-Allow-Credentials": "true",
-    })
-
-@app.exception_handler(Exception)
-async def exception_handler(request: Request, exception: Union[Exception, RuntimeError]):
-    headers = {
-        'Access-Control-Allow-Origin': request.headers.get("origin", "*"),
-        'Access-Control-Allow-Credentials': 'true',
-        'Access-Control-Allow-Methods': '*',
-        'Access-Control-Allow-Headers': '*',
-    }
-    response = JSONResponse(
-        jsonable_encoder(
-            {
-                "exception": str(exception),
-                "code": 500,
-            }
-        ),
-        headers=headers
-    )
-    return response
 
 @app.get("/")
 async def root():
