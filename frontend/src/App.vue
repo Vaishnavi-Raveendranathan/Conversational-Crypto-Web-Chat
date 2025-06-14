@@ -164,7 +164,7 @@ export default {
       const lowerMessage = message.toLowerCase()
       
       if (lowerMessage.includes('price') || lowerMessage.includes('trading')) {
-        const symbol = message.toUpperCase().match(/\b[A-Z]{2,}\b/)?.[0] || 'BTC'
+        const symbol = message.match(/\b[A-Z]{2,}\b/)?.[0] || 'BTC'
         try {
           const response = await axios.get(`${API_BASE_URL}/api/price/${symbol}`)
           return `The current price of ${symbol} is $${response.data.price.toLocaleString()}`
@@ -186,7 +186,7 @@ export default {
       }
 
       if (lowerMessage.includes('stats') || lowerMessage.includes('info') || lowerMessage.includes('show me')) {
-        const symbol = message.toUpperCase().match(/\b[A-Z]{2,}\b/)?.[0] || 'BTC'
+        const symbol = message.match(/\b[A-Z]{2,}\b/)?.[0] || 'BTC'
         try {
           const response = await axios.get(`${API_BASE_URL}/api/stats/${symbol}`)
           const data = response.data
@@ -200,7 +200,7 @@ export default {
       }
 
       if (lowerMessage.includes('chart') || lowerMessage.includes('graph') || lowerMessage.includes('price history')) {
-        const symbol = message.toUpperCase().match(/\b[A-Z]{2,}\b/)?.[0] || 'BTC'
+        const symbol = message.match(/\b[A-Z]{2,}\b/)?.[0] || 'BTC'
         try {
           const response = await axios.get(`${API_BASE_URL}/api/chart/${symbol}`)
           const prices = response.data.prices
